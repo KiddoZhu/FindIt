@@ -1,5 +1,11 @@
+data/*
 Debug/
 Release/
+FindIt/Debug/
+FindIt/Release/
+DataGenerator/Debug/
+DataGenerator/Release/
+*.sdf
 
 # Compiled Object files
 *.slo
@@ -121,19 +127,3 @@ scala-package/*/*/target/
 
 # Mac OS X
 .DS_Store
-
-#Notebook Automated Test
-!tests/nightly/test_config.txt
-!tests/nightly/TestNotebook
-
-# pip building tools
-tools/pip_package/build
-tools/pip_package/dist
-tools/pip_package/mxnet.egg-info
-tools/pip_package/mxnet
-
-# temporary path for building dependencies when building wheel
-deps/
-
-*.jar
-target
