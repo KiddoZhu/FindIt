@@ -5,7 +5,10 @@ FindIt/Debug/
 FindIt/Release/
 DataGenerator/Debug/
 DataGenerator/Release/
+
+# Visual Studio
 *.sdf
+*.opensdf
 
 # Compiled Object files
 *.slo
