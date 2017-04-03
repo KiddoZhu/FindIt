@@ -9,6 +9,7 @@ Search for all occurances of gram patterns in a given text, supporting online in
 The original competition task is modified slightly by
 - Assume all inputs are ASCII
 - A line with a single 'E' refers to the end of a batch
+- Return a multiset of occurances
 
 ## Usage
 
