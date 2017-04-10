@@ -100,4 +100,5 @@ void Generator::Generate(FILE *fout, int insert, int remove, int query)
 		fprintf(fout, "Q %.*s\n", blanks[q][blanks[q].size() - 1] - blanks[q][0] - 1,
 			raw + blanks[q][0] + 1);
 	}
+	fprintf(fout, "E\n");
 }
