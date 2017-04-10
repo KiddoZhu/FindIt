@@ -12,7 +12,7 @@ vector<vector<String>> NaiveSerial::RunBatch(vector<String> batch)
 	for (int i = 0; i < batch.size(); i++)
 		switch (batch[i].s[0]) {
 			case 'A': Insert(batch[i] + 1); break;
-			case 'D': Delete(batch[i] + 1); break;
+			case 'D': Remove(batch[i] + 1); break;
 			case 'Q': results.push_back(Query(batch[i] + 1)); break;
 		}
 	return results;
@@ -23,7 +23,7 @@ void NaiveSerial::Insert(String pattern)
 	table[StringHash(pattern)] = pattern;
 }
 
-void NaiveSerial::Delete(String pattern)
+void NaiveSerial::Remove(String pattern)
 {
 	table.erase(StringHash(pattern));
 }

@@ -75,14 +75,12 @@ void Evaluator::Run(const char *input_file, const char *output_file, const char 
 					patternID = 0;
 				}
 			}
-
 			batch.clear();
 			batchID++;
 		}
 		else
 			batch.push_back(String(begin, end - begin));
 	}
-
 	UnmapViewOfFile(input);
 
 	printf("Input: %s, Model: %s, Time elapsed: %.3f s\n",

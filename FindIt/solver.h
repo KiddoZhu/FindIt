@@ -12,7 +12,7 @@ public:
 	unordered_map<DoubleHashValue, String> table;
 
 	void Insert(String pattern);
-	void Delete(String pattern);
+	void Remove(String pattern);
 	vector<String> Query(String text);
 	vector<vector<String>> RunBatch(vector<String> batch);
 };

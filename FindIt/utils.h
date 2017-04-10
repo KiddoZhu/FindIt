@@ -4,8 +4,7 @@
 #include <typeinfo>
 #pragma once
 
-#define DEBUG
-#ifdef DEBUG
+#ifndef NDEBUG
 	#define debug(...) printf(__VA_ARGS__)
 #else
 	#define debug

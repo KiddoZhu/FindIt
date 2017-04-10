@@ -4,7 +4,7 @@
 int main()
 {
 	NaiveSerial solver;
-	Evaluator evaluator = Evaluator(&solver);
+	Evaluator evaluator(&solver);
 
 	evaluator.Run(R"(..\data\tiny.input)", R"(..\data\tiny.output)", NULL);
 }
