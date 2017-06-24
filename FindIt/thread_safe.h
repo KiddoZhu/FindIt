@@ -4,6 +4,7 @@
 
 using namespace std;
 
+#pragma deprecated(safe_unordered_map)
 template<class _Kty, class _Ty, class _Hasher = hash<_Kty>, class _Keyeq = equal_to<_Kty>,
 	class _Alloc = allocator<pair<const _Kty, _Ty>>>
 class safe_unordered_map : protected unordered_map<_Kty, _Ty, _Hasher, _Keyeq, _Alloc> {
@@ -37,6 +38,7 @@ public:
 	}
 };
 
+#pragma deprecated(safe_vector)
 template<class _Ty, class _Alloc = allocator<_Ty>>
 class safe_vector : protected vector<_Ty, _Alloc> {
 // use protected inheritance to prevent direct access to unsafe interface

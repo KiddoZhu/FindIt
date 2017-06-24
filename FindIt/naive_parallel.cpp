@@ -1,4 +1,3 @@
-#include <thread>
 #include <condition_variable>
 #include <algorithm>
 #include "solver.h"

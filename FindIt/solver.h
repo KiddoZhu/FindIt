@@ -1,6 +1,8 @@
 #include <unordered_map>
 #include <atomic>
-#include "thread_safe.h"
+#include <thread>
+#include <mutex>
+#include <tbb/concurrent_vector.h>
 #include "hash.h"
 #pragma once
 
@@ -25,8 +27,8 @@ public:
 
 	int thread_cnt;
 	vector<thread> workers;
-	vector<DoubleHashValue> hashs; // no need to use safe_vector as threads write different slots
-	safe_vector<pair<int, int>> occurs;
+	vector<DoubleHashValue> hashs; // no need to use concurrent_vector as threads write different slots
+	tbb::concurrent_vector<pair<int, int>> occurs;
 	vector<vector<String>> results;
 	atomic<int> task_idx, sub_idx;
 	mutex mtx;
