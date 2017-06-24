@@ -17,7 +17,7 @@ public:
 
 	_StringHash() = delete;
 	_StringHash(String s);
-	DoubleHashValue operator ()(int l, int r); // [l, r)
+	DoubleHashValue operator()(int l, int r) const; // [l, r)
 	operator DoubleHashValue();
 };
 
@@ -52,7 +52,7 @@ _StringHash<base0, base1, max_len>::_StringHash(String s)
 }
 
 template <int base0, int base1, int max_len>
-DoubleHashValue _StringHash<base0, base1, max_len>::operator ()(int l, int r) {
+DoubleHashValue _StringHash<base0, base1, max_len>::operator()(int l, int r) const {
 	UInt64 ret;
 	
 	for (int j = 0; j < 2; j++)

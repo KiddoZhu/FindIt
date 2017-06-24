@@ -88,7 +88,7 @@ Generator::Generator(const char *path, int min_cnt, int max_cnt, double noise)
 
 void Generator::Generate(FILE *fout, int insert, int remove, int query)
 {
-	uniform_int_distribution<int> pattern_gen(0, patterns.size()), query_gen(0, blanks.size());
+	uniform_int_distribution<int> pattern_gen(0, patterns.size() - 1), query_gen(0, blanks.size() - 1);
 	vector<pair<char, String>> output;
 
 	while (insert--) output.push_back(make_pair('A', patterns[pattern_gen(engine)]));

@@ -3,6 +3,8 @@
 #include "solver.h"
 #pragma once
 
+const int MAX_LINE_LEN = 16 << 20; // MB
+
 class Evaluator {
 public:
 	Solver * const solver;

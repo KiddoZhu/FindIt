@@ -14,33 +14,75 @@ public:
 
 	mapped_type& operator[](const key_type& _Keyval)
 	{
-		mtx.lock();
-		mapped_type &result = Unsafe::operator[](_Keyval);
-		mtx.unlock();
-		return result;
+		lock_guard<mutex> guard(mtx);
+		return Unsafe::operator[](_Keyval);
 	}
 
 	size_type erase(const key_type& _Keyval)
 	{
-		mtx.lock();
-		size_type result = Unsafe::erase(_Keyval);
-		mtx.unlock();
-		return result;
+		lock_guard<mutex> guard(mtx);
+		return Unsafe::erase(_Keyval);
 	}
 
 	iterator find(const key_type& _Keyval)
 	{
-		// mtx.lock();
-		iterator result = Unsafe::lower_bound(_Keyval);
-		// mtx.unlock();
-		return result;
+		// lock_guard<mutex> guard(mtx);
+		return Unsafe::find(_Keyval);
 	}
 
 	iterator end() _NOEXCEPT
 	{
-		// mtx.lock();
-		iterator result = Unsafe::end();
-		// mtx.unlock();
-		return result;
+		// lock_guard<mutex> guard(mtx);
+		return Unsafe::end();
+	}
+};
+
+template<class _Ty, class _Alloc = allocator<_Ty>>
+class safe_vector : protected vector<_Ty, _Alloc> {
+// use protected inheritance to prevent direct access to unsafe interface
+public:
+	typedef vector<_Ty, _Alloc> Unsafe;
+	mutex mtx;
+
+	void push_back(value_type& _Val)
+	{
+		lock_guard<mutex> guard(mtx);
+		Unsafe::push_back(_Val);
+	}
+
+	reference operator[](size_type _Pos)
+	{
+		// lock_guard<mutex> guard(mtx);
+		return Unsafe::operator[](_Pos);
+	}
+
+	void resize(size_type _Newsize)
+	{
+		lock_guard<mutex> guard(mtx);
+		Unsafe::resize(_Newsize);
+	}
+
+	iterator begin() _NOEXCEPT
+	{
+		// lock_guard<mutex> guard(mtx);
+		return Unsafe::begin();
+	}
+
+	iterator end() _NOEXCEPT
+	{
+		// lock_guard<mutex> guard(mtx);
+		return Unsafe::end();
+	}
+
+	size_type size() const _NOEXCEPT
+	{
+		// lock_guard<mutex> guard(mtx);
+		return Unsafe::size();
+	}
+
+	void clear() _NOEXCEPT
+	{
+		lock_guard<mutex> guard(mtx);
+		return Unsafe::clear();
 	}
 };

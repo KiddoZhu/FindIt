@@ -18,15 +18,15 @@ public:
 		return a.s < b.s || (a.s == b.s && a.length < b.length);
 	}
 
-	inline bool operator ==(const String &a) {
+	inline bool operator ==(const String &a) const {
 		return s == a.s && length == a.length;
 	}
 
-	inline String operator +(int n) {
+	inline String operator +(int n) const {
 		return String(s + n, length - n);
 	}
 
-	inline String operator -(int n) {
+	inline String operator -(int n) const {
 		return String(s - n, length + n);
 	}
 

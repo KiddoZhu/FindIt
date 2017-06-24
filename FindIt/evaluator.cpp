@@ -9,6 +9,7 @@ void Evaluator::Run(const char *input_file, const char *output_file, const char 
 	vector<vector<String> > results;
 	unsigned char *begin, *end;
 	int batchID = 0;
+	char *output_buf = new char[MAX_LINE_LEN], *answer_buf = new char[MAX_LINE_LEN];
 
 	HANDLE file, mapping;
 	UInt64 length;
@@ -44,7 +45,7 @@ void Evaluator::Run(const char *input_file, const char *output_file, const char 
 			QueryPerformanceCounter(&stop);
 			cycles.QuadPart += stop.QuadPart - start.QuadPart;
 
-			char output_buf[65536], *p = output_buf;
+			char *p = output_buf;
 
 			*p = 0;
 			for (int q = 0; q < results.size(); q++) {
@@ -61,19 +62,18 @@ void Evaluator::Run(const char *input_file, const char *output_file, const char 
 				fwrite(output_buf, sizeof(char), p - output_buf, output);
 
 			if (answer) {
-				char answer_buf[65536];
 				int queryID = 0, patternID = 0;
 
-				fread(answer_buf, sizeof(char), p - output_buf, answer);
-				for (int i = 0; i < strlen(answer_buf); i++)
-				if (answer_buf[i] != output_buf[i])
-					panic("batch %d, query %d, pattern %d: not match.", batchID, queryID, patternID);
-				else if (answer_buf[i] == '|')
-					patternID++;
-				else if (answer_buf[i] == '\n') {
-					queryID++;
-					patternID = 0;
-				}
+				int len = fread(answer_buf, sizeof(char), p - output_buf, answer);
+				for (int i = 0; i < len; i++)
+					if (answer_buf[i] != output_buf[i])
+						panic("batch %d, query %d, pattern %d: not match.", batchID, queryID, patternID);
+					else if (answer_buf[i] == '|')
+						patternID++;
+					else if (answer_buf[i] == '\n') {
+						queryID++;
+						patternID = 0;
+					}
 			}
 			batch.clear();
 			batchID++;
@@ -82,6 +82,8 @@ void Evaluator::Run(const char *input_file, const char *output_file, const char 
 			batch.push_back(String(begin, end - begin));
 	}
 	UnmapViewOfFile(input);
+	delete[] output_buf;
+	delete[] answer_buf;
 
 	printf("Input: %s, Model: %s, Time elapsed: %.3f s\n",
 		input_file, typeid(*solver).name(), (float)cycles.QuadPart / frequency.QuadPart);

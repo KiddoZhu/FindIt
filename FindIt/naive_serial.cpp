@@ -5,7 +5,7 @@ using namespace std;
 
 #pragma region NaiveSerial
 
-vector<vector<String>> NaiveSerial::RunBatch(vector<String> batch)
+vector<vector<String>> NaiveSerial::RunBatch(const vector<String> &batch)
 {
 	vector<vector<String>> results;
 
@@ -18,20 +18,20 @@ vector<vector<String>> NaiveSerial::RunBatch(vector<String> batch)
 	return results;
 }
 
-void NaiveSerial::Insert(String pattern)
+void NaiveSerial::Insert(const String &pattern)
 {
 	table[StringHash(pattern)] = pattern;
 }
 
-void NaiveSerial::Remove(String pattern)
+void NaiveSerial::Remove(const String &pattern)
 {
 	table.erase(StringHash(pattern));
 }
 
-vector<String> NaiveSerial::Query(String text)
+vector<String> NaiveSerial::Query(const String &text)
 {
 	vector<pair<int, int>> occurs;
-	vector<String> results;
+	vector<String> result;
 	StringHash hash = StringHash(text);
 
 	for (int l = 0; l < text.length; l++)
@@ -43,8 +43,8 @@ vector<String> NaiveSerial::Query(String text)
 	}
 	sort(occurs.begin(), occurs.end());
 	for (int i = 0; i < occurs.size(); i++)
-		results.push_back(String(text.s + occurs[i].first, occurs[i].second));
-	return results;
+		result.push_back(String(text.s + occurs[i].first, occurs[i].second));
+	return result;
 }
 
 #pragma endregion
