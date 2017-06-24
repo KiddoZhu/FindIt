@@ -72,6 +72,7 @@
   <ItemGroup>
     <ClCompile Include="evaluator.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="naive_parallel.cpp" />
     <ClCompile Include="naive_serial.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +80,7 @@
     <ClInclude Include="hash.h" />
     <ClInclude Include="solver.h" />
     <ClInclude Include="string.h" />
+    <ClInclude Include="thread_safe.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

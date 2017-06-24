@@ -22,14 +22,14 @@ private:
 	char *raw, *corrupted;
 public:
 	vector<vector<int>> blanks;
-	vector<String> patterns;
+	vector<String> patterns, queries;
 	int current;
 
 	Generator() = delete;
 	Generator(Generator &g) = delete;
 	Generator(const char *path, int min_cnt = 100, int max_cnt = 300, double noise = 0.2);
 	template <class Distribution>
-	void BuildPatterns(int positive, Distribution length_gen, double negative = 0.1);
+	void BuildPatterns(int samples, Distribution length_gen, double negative = 0.1);
 	void Generate(FILE* fout, int insert, int remove, int query);
 };
 
@@ -56,7 +56,6 @@ void Generator::BuildPatterns(int samples, Distribution length_gen, double negat
 		int start = blanks[line][b], end = blanks[line][b + len];
 		patterns.push_back(String((unsigned char *)source + start + 1, end - start - 1));
 	}
-	random_shuffle(patterns.begin(), patterns.end());
 }
 
 #pragma endregion

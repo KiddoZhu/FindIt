@@ -24,6 +24,9 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="naive_parallel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hash.h">
@@ -39,6 +42,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="evaluator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_safe.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

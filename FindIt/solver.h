@@ -1,4 +1,5 @@
 #include <unordered_map>
+#include "thread_safe.h"
 #include "hash.h"
 #pragma once
 
@@ -19,10 +20,11 @@ public:
 
 class NaiveParallel : public Solver {
 public:
-	unordered_map<DoubleHashValue, String> table;
+	int thread_cnt = 8;
+	safe_unordered_map<DoubleHashValue, String> table;
 
 	void Insert(String pattern);
-	void Delete(String pattern);
+	void Remove(String pattern);
 	vector<String> Query(String text);
-	vector<vector<String>> RunBatch(vector<String> batch, int threadCnt);
+	vector<vector<String>> RunBatch(vector<String> batch);
 };
