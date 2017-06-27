@@ -48,12 +48,12 @@ void Evaluator::Run(const char *input_file, const char *output_file, const char 
 			char *p = output_buf;
 
 			*p = 0;
-			for (int q = 0; q < results.size(); q++) {
+			for (size_t q = 0; q < results.size(); q++) {
 				if (results[q].empty())
 					p += sprintf(p, "-1\n");
 				else {
 					p += sprintf(p, "%.*s", results[q][0].length - 2, results[q][0].s + 1);
-					for (int i = 1; i < results[q].size(); i++)
+					for (size_t i = 1; i < results[q].size(); i++)
 						p += sprintf(p, "|%.*s", results[q][i].length - 2, results[q][i].s + 1);
 					p += sprintf(p, "\n");
 				}

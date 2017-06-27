@@ -27,6 +27,12 @@
     <ClCompile Include="naive_parallel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="parallel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="hash.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hash.h">

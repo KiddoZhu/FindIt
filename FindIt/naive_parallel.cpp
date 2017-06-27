@@ -1,4 +1,3 @@
-#include <condition_variable>
 #include <algorithm>
 #include "solver.h"
 
@@ -7,7 +6,6 @@
 vector<vector<String>> NaiveParallel::RunBatch(const vector<String> &batch)
 {
 	vector<vector<String>> results;
-	condition_variable query_finished;
 
 	hashs.resize(batch.size());
 	task_idx = 0;
@@ -16,7 +14,7 @@ vector<vector<String>> NaiveParallel::RunBatch(const vector<String> &batch)
 	for (int i = 0; i < thread_cnt; i++)
 		workers[i].join();
 
-	for (int i = 0; i < batch.size(); i++)
+	for (size_t i = 0; i < batch.size(); i++)
 		switch (batch[i].s[0]) {
 		case 'A': Insert(hashs[i], batch[i] + 1); break;
 		case 'D': Remove(hashs[i]); break;
@@ -48,14 +46,14 @@ vector<String> NaiveParallel::Query(const String &text)
 		workers[i].join();
 	
 	sort(occurs.begin(), occurs.end());
-	for (int i = 0; i < occurs.size(); i++)
+	for (size_t i = 0; i < occurs.size(); i++)
 		result.push_back(String(text.s + occurs[i].first, occurs[i].second));
 	return result;
 }
 
 void NaiveParallel::HashWorker(const vector<String> &batch)
 {
-	int i;
+	size_t i;
 	while ((i = task_idx.fetch_add(1)) < batch.size()) {
 		if (batch[i].s[0] != 'Q')
 			hashs[i] = StringHash(batch[i] + 1);

@@ -1,8 +1,9 @@
 #include <unordered_map>
+#include <tbb/concurrent_vector.h>
+#include <tbb/concurrent_unordered_map.h>
 #include <atomic>
 #include <thread>
 #include <mutex>
-#include <tbb/concurrent_vector.h>
 #include "hash.h"
 #pragma once
 
@@ -27,11 +28,12 @@ public:
 
 	int thread_cnt;
 	vector<thread> workers;
+
+	// parallel
+	atomic<size_t> task_idx, sub_idx;
+	mutex mtx;
 	vector<DoubleHashValue> hashs; // no need to use concurrent_vector as threads write different slots
 	tbb::concurrent_vector<pair<int, int>> occurs;
-	vector<vector<String>> results;
-	atomic<int> task_idx, sub_idx;
-	mutex mtx;
 
 	NaiveParallel() = delete;
 	NaiveParallel(int thread_cnt) : thread_cnt(thread_cnt) { workers.resize(thread_cnt); }
@@ -43,4 +45,54 @@ public:
 
 	void HashWorker(const vector<String> &batch);
 	void QueryWorker(const String &text, const StringHash &hash);
+};
+
+class Timestamp {
+public:
+	bool exist;
+	int batch_id, line_id;
+
+	Timestamp();
+	Timestamp(bool exist, int batch_id, int line_id) : exist(exist), batch_id(batch_id), line_id(line_id) {}
+
+	inline bool operator <(const Timestamp &a)
+	{
+		return (batch_id < a.batch_id) || (batch_id == a.batch_id) && (line_id < a.line_id);
+	}
+};
+
+class Parallel : public Solver {
+public:	
+	typedef vector<Timestamp> A;
+	typedef unordered_map<DoubleHashValue, A> B;
+	typedef unordered_map<int, B> C;
+	typedef unordered_map<DoubleHashValue, C> D;
+	typedef unordered_map<int, D> E;
+	tbb::concurrent_unordered_map<DoubleHashValue, E> table;
+	//tbb::concurrent_unordered_map<DoubleHashValue, // first hash
+	//	unordered_map<int, // key gram count
+	//		unordered_map<DoubleHashValue, // key hash
+	//			unordered_map<int, // full length
+	//				unordered_map<DoubleHashValue, // full hash
+	//					vector<Timestamp>>>>>> table;
+
+	int thread_cnt;
+	vector<thread> workers;
+
+	// parallel
+	int batch_id;
+	atomic<size_t> task_idx;
+	// vector<atomic<size_t>> sub_idx; // atomic is not copy-assignable
+	atomic<size_t> *sub_idx;
+	tbb::concurrent_vector<pair<GramHash, Timestamp>> queries;
+	tbb::concurrent_vector<vector<pair<int, int>>> occurs;
+	static const int chunk_size;
+
+	Parallel() = delete;
+	Parallel(int thread_cnt) : thread_cnt(thread_cnt) { workers.resize(thread_cnt); }
+
+	vector<vector<String>> RunBatch(const vector<String> &batch);
+
+	void HashWorker(const vector<String> &batch);
+	void QueryWorker();
 };

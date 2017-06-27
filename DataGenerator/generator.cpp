@@ -29,7 +29,7 @@ static vector<FILE *> OpenAllFiles(const char *path)
 
 Generator::Generator(const char *path, int min_cnt, int max_cnt, double noise)
 {
-	uniform_int_distribution<int> char_gen(0, 127);
+	uniform_int_distribution<int> char_gen(33, 126);
 	vector<FILE*> fins;
 	int total_len = 0;
 

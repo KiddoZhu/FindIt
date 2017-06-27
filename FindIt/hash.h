@@ -23,6 +23,18 @@ public:
 
 typedef _StringHash<> StringHash;
 
+class GramHash : public StringHash {
+public:
+	int gram_count, key_gram_count, full_length;
+	vector<int> blanks;
+
+	DoubleHashValue first_hash, key_hash, full_hash;
+
+	GramHash() = delete;
+	GramHash(String s);
+	DoubleHashValue GramHash::operator()(int l, int r) const;
+};
+
 #pragma region _StringHash
 
 // explicit declare static members
@@ -52,7 +64,8 @@ _StringHash<base0, base1, max_len>::_StringHash(String s)
 }
 
 template <int base0, int base1, int max_len>
-DoubleHashValue _StringHash<base0, base1, max_len>::operator()(int l, int r) const {
+DoubleHashValue _StringHash<base0, base1, max_len>::operator()(int l, int r) const
+{
 	UInt64 ret;
 	
 	for (int j = 0; j < 2; j++)
@@ -61,7 +74,8 @@ DoubleHashValue _StringHash<base0, base1, max_len>::operator()(int l, int r) con
 }
 
 template <int base0, int base1, int max_len>
-_StringHash<base0, base1, max_len>::operator DoubleHashValue() {
+_StringHash<base0, base1, max_len>::operator DoubleHashValue()
+{
 	return this->operator()(0, prefixs[0].size() - 1);
 }
 
