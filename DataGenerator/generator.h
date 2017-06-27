@@ -29,19 +29,20 @@ public:
 	Generator(Generator &g) = delete;
 	Generator(const char *path, int min_cnt = 100, int max_cnt = 300, double noise = 0.2);
 	template <class Distribution>
-	void BuildPatterns(int samples, Distribution length_gen, double negative = 0.1);
+	void BuildPatterns(int samples, Distribution length_gen, bool append = false, double negative = 0.1);
 	void Generate(FILE* fout, int insert, int remove, int query);
 };
 
 #pragma region Generator
 
 template <class Distribution>
-void Generator::BuildPatterns(int samples, Distribution length_gen, double negative)
+void Generator::BuildPatterns(int samples, Distribution length_gen, bool append, double negative)
 {
 	uniform_int_distribution<int> line_gen(0, blanks.size() - 1), blank_gen;
 	char *source;
 
-	patterns.clear();
+	if (!append)
+		patterns.clear();
 	while (samples--) {
 		if (probability(engine) >= negative)
 			source = raw;

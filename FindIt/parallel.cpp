@@ -16,7 +16,10 @@ vector<vector<String>> Parallel::RunBatch(const vector<String> &batch)
 		workers[i] = thread(&Parallel::HashWorker, this, batch);
 	for (int i = 0; i < thread_cnt; i++)
 		workers[i].join();
+	typedef pair<Timestamp, GramHash> Query;
+	sort(queries.begin(), queries.end(), [&](Query a, Query b){ return a.first < b.first; });
 
+	_batch = batch;
 	task_idx = 0;
 	sub_idx = new atomic<size_t>[queries.size()];
 	occurs.clear();
@@ -26,7 +29,7 @@ vector<vector<String>> Parallel::RunBatch(const vector<String> &batch)
 	for (int i = 0; i < thread_cnt; i++)
 		workers[i].join();
 	for (size_t i = 0; i < queries.size(); i++) {
-		String text = batch[queries[i].second.line_id];
+		String text = batch[queries[i].first.line_id] + 1;
 		sort(occurs[i].begin(), occurs[i].end());
 		vector<String> result;
 		for (size_t j = 0; j < occurs[i].size(); j++)
@@ -44,16 +47,19 @@ void Parallel::HashWorker(const vector<String> &batch)
 	while ((i = task_idx.fetch_add(1)) < batch.size()) {
 		GramHash hash = GramHash(batch[i] + 1);
 		Timestamp ts = Timestamp(batch[i].s[0] == 'A', batch_id, i);
-		auto a = table[hash.first_hash];
-		auto b = a[hash.key_gram_count];
-		auto c = b[hash.key_hash];
-		auto d = c[hash.full_length];
-		auto e = d[hash.full_hash];
 		switch (batch[i].s[0]) {
-		case 'A': case 'D':
-			e.push_back(ts);
-				break;
-		case 'Q': queries.push_back(make_pair(hash, ts)); break;
+		case 'A': case 'D': {
+			// without mutex it fails with runtime error here, don't know why
+			lock_guard<mutex> guard(mtx);
+			table[hash.first_hash]
+				[hash.key_gram_count]
+				[hash.key_hash]
+				[hash.full_length]
+				[hash.full_hash].push_back(ts);
+		}
+			break;
+		case 'Q':
+			queries.push_back(make_pair(ts, hash));
 		}
 	}
 }
@@ -62,35 +68,36 @@ void Parallel::QueryWorker()
 {
 	size_t i, j;
 	while ((i = task_idx.fetch_add(1)) < queries.size()) {
-		pair<GramHash, Timestamp> q = queries[i];
-		GramHash hash = q.first;
-		Timestamp ts = q.second;
+		Timestamp &ts = queries[i].first;
+		GramHash &hash = queries[i].second;
 		while ((j = sub_idx[i].fetch_add(chunk_size)) < hash.gram_count) {
-			for (int jj = j; jj < jj + chunk_size && jj < hash.gram_count; jj++) {
-				DoubleHashValue first_expected = hash(jj, jj + 1);
+			for (size_t _j = j; _j < j + chunk_size && _j < hash.gram_count; _j++) {
+				DoubleHashValue first_expected = hash(_j, _j + 1);
 				if (table.find(first_expected) == table.end())
 					continue;
-				auto key_gram_table = table[first_expected];
+				auto &key_gram_table = table[first_expected];
 				for (auto p = key_gram_table.begin(); p != key_gram_table.end(); p++) {
 					int key_gram_count = p->first;
-					int key_expected = hash(jj, jj + key_gram_count);
-					auto key_table = p->second;
+					if (_j + key_gram_count > hash.gram_count)
+						continue;
+					DoubleHashValue key_expected = hash(_j, _j + key_gram_count);
+					auto &key_table = p->second;
 					if (key_table.find(key_expected) == key_table.end())
 						continue;
-					auto full_length_table = key_table[key_expected];
+					auto &full_length_table = key_table[key_expected];
 					for (auto q = full_length_table.begin(); q != full_length_table.end(); q++) {
-						int full_length = q->first;
-						int full_expected = ((StringHash)hash)(jj, jj + full_length);
-						auto full_table = q->second;
+						int full_length = q->first, l = hash.blanks[_j];
+						DoubleHashValue full_expected = ((StringHash)hash)(l, l + full_length);
+						auto &full_table = q->second;
 						if (full_table.find(full_expected) == full_table.end())
 							continue;
-						vector<Timestamp> tslist = full_table[full_expected];
+						vector<Timestamp> &tslist = full_table[full_expected];
 						size_t k;
 						for (k = 0; k < tslist.size(); k++)
 							if (ts < tslist[k])
 								break;
 						if (tslist[--k].exist)
-							occurs[k].push_back(make_pair(jj, jj + full_length));
+							occurs[i].push_back(make_pair(l, full_length));
 					}
 				}
 			}

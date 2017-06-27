@@ -63,18 +63,12 @@ public:
 
 class Parallel : public Solver {
 public:	
-	typedef vector<Timestamp> A;
-	typedef unordered_map<DoubleHashValue, A> B;
-	typedef unordered_map<int, B> C;
-	typedef unordered_map<DoubleHashValue, C> D;
-	typedef unordered_map<int, D> E;
-	tbb::concurrent_unordered_map<DoubleHashValue, E> table;
-	//tbb::concurrent_unordered_map<DoubleHashValue, // first hash
-	//	unordered_map<int, // key gram count
-	//		unordered_map<DoubleHashValue, // key hash
-	//			unordered_map<int, // full length
-	//				unordered_map<DoubleHashValue, // full hash
-	//					vector<Timestamp>>>>>> table;
+	tbb::concurrent_unordered_map<DoubleHashValue, // first hash
+		unordered_map<int, // key gram count
+			unordered_map<DoubleHashValue, // key hash
+				unordered_map<int, // full length
+					unordered_map<DoubleHashValue, // full hash
+						vector<Timestamp>>>>>> table;
 
 	int thread_cnt;
 	vector<thread> workers;
@@ -84,7 +78,8 @@ public:
 	atomic<size_t> task_idx;
 	// vector<atomic<size_t>> sub_idx; // atomic is not copy-assignable
 	atomic<size_t> *sub_idx;
-	tbb::concurrent_vector<pair<GramHash, Timestamp>> queries;
+	mutex mtx;
+	tbb::concurrent_vector<pair<Timestamp, GramHash>> queries;
 	tbb::concurrent_vector<vector<pair<int, int>>> occurs;
 	static const int chunk_size;
 
@@ -92,6 +87,8 @@ public:
 	Parallel(int thread_cnt) : thread_cnt(thread_cnt) { workers.resize(thread_cnt); }
 
 	vector<vector<String>> RunBatch(const vector<String> &batch);
+
+	vector<String> _batch;
 
 	void HashWorker(const vector<String> &batch);
 	void QueryWorker();

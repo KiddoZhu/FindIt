@@ -82,6 +82,10 @@ void Evaluator::Run(const char *input_file, const char *output_file, const char 
 			batch.push_back(String(begin, end - begin));
 	}
 	UnmapViewOfFile(input);
+	if (output_file)
+		fclose(output);
+	if (answer_file)
+		fclose(answer);
 	delete[] output_buf;
 	delete[] answer_buf;
 
