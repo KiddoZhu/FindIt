@@ -21,7 +21,8 @@ vector<vector<String>> Parallel::RunBatch(const vector<String> &batch)
 
 	_batch = batch;
 	task_idx = 0;
-	sub_idx = new atomic<size_t>[queries.size()];
+	sub_idx.clear();
+	sub_idx.resize(queries.size());
 	occurs.clear();
 	occurs.resize(queries.size());
 	for (int i = 0; i < thread_cnt; i++)
@@ -36,8 +37,7 @@ vector<vector<String>> Parallel::RunBatch(const vector<String> &batch)
 			result.push_back(String(text.s + occurs[i][j].first, occurs[i][j].second));
 		results.push_back(result);
 	}
-	delete[] sub_idx;
-	
+
 	return results;
 }
 
@@ -70,7 +70,8 @@ void Parallel::QueryWorker()
 	while ((i = task_idx.fetch_add(1)) < queries.size()) {
 		Timestamp &ts = queries[i].first;
 		GramHash &hash = queries[i].second;
-		while ((j = sub_idx[i].fetch_add(chunk_size)) < hash.gram_count) {
+		while ((j = sub_idx[i]) < hash.gram_count) {
+			sub_idx[i] += chunk_size;
 			for (size_t _j = j; _j < j + chunk_size && _j < hash.gram_count; _j++) {
 				DoubleHashValue first_expected = hash(_j, _j + 1);
 				if (table.find(first_expected) == table.end())

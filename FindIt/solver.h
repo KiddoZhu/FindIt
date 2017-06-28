@@ -77,7 +77,7 @@ public:
 	int batch_id;
 	atomic<size_t> task_idx;
 	// vector<atomic<size_t>> sub_idx; // atomic is not copy-assignable
-	atomic<size_t> *sub_idx;
+	vector<size_t> sub_idx;
 	mutex mtx;
 	tbb::concurrent_vector<pair<Timestamp, GramHash>> queries;
 	tbb::concurrent_vector<vector<pair<int, int>>> occurs;
