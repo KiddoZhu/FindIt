@@ -49,7 +49,7 @@ Metric: total computation time (s)
 | OpenMP Parallel   |      1.337       |       1.076       |        1.430       |
 | Powerful Parallel |    **0.493**     |     **0.119**     |      **0.476**     |
 
-on a i5-3320M CPU with 4 threads, using O2 optimization. 
+on an i5-3320M CPU with 4 threads, using O2 optimization. 
 
 ## Author
 - [Zhaocheng Zhu](https://github.com/kiddozhu/)
