@@ -47,6 +47,24 @@ public:
 	void QueryWorker(const String &text, const StringHash &hash);
 };
 
+class OpenMPParallel : public Solver {
+public:
+	unordered_map<DoubleHashValue, String> table;
+
+	int thread_cnt;
+
+	// parallel
+	vector<DoubleHashValue> hashs;
+
+	OpenMPParallel() = delete;
+	OpenMPParallel(int thread_cnt) : thread_cnt(thread_cnt) {}
+
+	void Insert(DoubleHashValue key, const String &pattern);
+	void Remove(DoubleHashValue key);
+	vector<String> Query(const String & text);
+	vector<vector<String>> RunBatch(const vector<String> & batch);
+};
+
 class Timestamp {
 public:
 	bool exist;
@@ -61,7 +79,7 @@ public:
 	}
 };
 
-class Parallel : public Solver {
+class PowerfulParallel : public Solver {
 public:	
 	tbb::concurrent_unordered_map<DoubleHashValue, // first hash
 		unordered_map<int, // key gram count
@@ -83,8 +101,8 @@ public:
 	tbb::concurrent_vector<vector<pair<int, int>>> occurs;
 	static const int chunk_size;
 
-	Parallel() = delete;
-	Parallel(int thread_cnt) : thread_cnt(thread_cnt) { workers.resize(thread_cnt); }
+	PowerfulParallel() = delete;
+	PowerfulParallel(int thread_cnt) : thread_cnt(thread_cnt) { workers.resize(thread_cnt); }
 
 	vector<vector<String>> RunBatch(const vector<String> &batch);
 
